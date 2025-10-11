@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - KharchaMeter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--primary-gradient);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .glass-dark {
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .animate-fade {
+      animation: fadeIn 1s ease-in-out;
+    }
+    
+    .animate-slide {
+      animation: slideIn 0.8s ease-out;
+    }
+    
+    .animate-bounce-in {
+      animation: bounceIn 0.6s ease-out;
+    }
+    
+    .animate-pulse-slow {
+      animation: pulseSlow 3s ease-in-out infinite;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9) rotateY(10deg); }
+      to { opacity: 1; transform: scale(1) rotateY(0deg); }
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.3); }
+      50% { opacity: 1; transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes pulseSlow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    
+    .floating {
+      animation: float 8s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-20px) rotate(1deg); }
+      50% { transform: translateY(-10px) rotate(0deg); }
+      75% { transform: translateY(-15px) rotate(-1deg); }
+    }
+    
+    .gradient-text {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-8px) rotateX(5deg);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    
+    .ai-glow {
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+      animation: aiGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes aiGlow {
+      from { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+      to { box-shadow: 0 0 30px rgba(102, 126, 234, 0.5); }
+    }
+    
+    .chat-bubble {
+      animation: chatBubble 0.5s ease-out;
+    }
+    
+    @keyframes chatBubble {
+      from { opacity: 0; transform: scale(0) rotate(180deg); }
+      to { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      animation: progressFill 2s ease-out;
+    }
+    
+    @keyframes progressFill {
+      from { width: 0%; }
+      to { width: var(--progress-width); }
+    }
+    
+    .theme-toggle {
+      transition: all 0.3s ease;
+    }
+    
+    .theme-toggle:hover {
+      transform: rotate(180deg) scale(1.1);
+    }
+    
+    .micro-interaction {
+      transition: all 0.2s ease;
+    }
+    
+    .micro-interaction:active {
+      transform: scale(0.95);
+    }
+    
+    .smooth-scroll {
+      scroll-behavior: smooth;
+    }
+    
+    .parallax-bg {
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating background elements -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-20 left-20 w-40 h-40 bg-white rounded-full opacity-5 floating"></div>
+    <div class="absolute top-40 right-20 w-32 h-32 bg-white rounded-full opacity-5 floating" style="animation-delay: -2s;"></div>
+    <div class="absolute bottom-20 left-40 w-24 h-24 bg-white rounded-full opacity-5 floating" style="animation-delay: -4s;"></div>
+    <div class="absolute bottom-40 right-40 w-36 h-36 bg-white rounded-full opacity-5 floating" style="animation-delay: -1s;"></div>
+    <div class="absolute top-60 left-1/2 w-20 h-20 bg-blue-300 rounded-full opacity-3 floating" style="animation-delay: -3s;"></div>
+    <div class="absolute bottom-60 right-1/3 w-28 h-28 bg-purple-300 rounded-full opacity-3 floating" style="animation-delay: -5s;"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="glass-dark p-4 mb-8 animate-fade">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+          <span class="text-white font-bold text-lg">₹</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-white">KharchaMeter</h1>
+          <p class="text-white/70 text-sm font-medium">Track Smart, Spend Smart</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="text-white/80">Welcome, <span class="font-semibold">{{ username }}</span></span>
+        
+        <!-- AI Chatbot Toggle -->
+        <button id="aiChatToggle" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-all duration-300 micro-interaction ai-glow">
+          <i class="fas fa-robot mr-2"></i>AI Assistant
+        </button>
+        
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-300 micro-interaction theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        
+        <a href="{{ url_for('logout') }}" class="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-all duration-300 border border-red-500/30 micro-interaction">
+          <i class="fas fa-sign-out-alt mr-2"></i>Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto px-4 pb-8">
+    <!-- Welcome Section -->
+    <div class="text-center mb-8 animate-slide">
+      <h2 class="text-4xl font-bold text-white mb-2">Welcome to KharchaMeter</h2>
+      <p class="text-white/80 text-lg">Track Smart, Spend Smart - Your AI-Powered Expense Companion</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="glass rounded-2xl p-6 card-hover animate-slide">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-white/70 text-sm font-medium">Total Expenses</p>
+            <p class="text-3xl font-bold text-white">₹{{ "%.2f"|format(total_expenses) }}</p>
+          </div>
+          <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+            <i class="fas fa-chart-line text-white text-xl"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass rounded-2xl p-6 card-hover animate-slide" style="animation-delay: 0.1s;">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-white/70 text-sm font-medium">This Month</p>
+            <p class="text-3xl font-bold text-white">₹{{ "%.2f"|format(monthly_expenses) }}</p>
+          </div>
+          <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+            <i class="fas fa-calendar-alt text-white text-xl"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass rounded-2xl p-6 card-hover animate-slide" style="animation-delay: 0.2s;">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-white/70 text-sm font-medium">Categories</p>
+            <p class="text-3xl font-bold text-white">{{ category_data|length }}</p>
+          </div>
+          <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+            <i class="fas fa-tags text-white text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Insights Section -->
+    <div class="glass rounded-2xl p-6 mb-8 animate-slide" style="animation-delay: 0.3s;">
+      <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+        <i class="fas fa-brain mr-3 text-purple-400 ai-glow"></i>
+        AI-Powered Insights
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Predicted Budget -->
+        <div class="glass rounded-xl p-4 card-hover">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-target text-white"></i>
+            </div>
+            <span class="text-white/60 text-sm">AI Prediction</span>
+          </div>
+          <h3 class="text-xl font-bold text-white">₹{{ predicted_budget }}</h3>
+          <p class="text-white/70 text-sm">Recommended Monthly Budget</p>
+        </div>
+        
+        <!-- Spending Trend -->
+        <div class="glass rounded-xl p-4 card-hover">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-chart-line text-white"></i>
+            </div>
+            <span class="text-white/60 text-sm">Trend</span>
+          </div>
+          <h3 class="text-xl font-bold text-white capitalize">{{ ai_insights.spending_trend }}</h3>
+          <p class="text-white/70 text-sm">Spending Pattern</p>
+        </div>
+        
+        <!-- Daily Average -->
+        <div class="glass rounded-xl p-4 card-hover">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-calendar-day text-white"></i>
+            </div>
+            <span class="text-white/60 text-sm">Daily Avg</span>
+          </div>
+          <h3 class="text-xl font-bold text-white">₹{{ "%.2f"|format(ai_insights.avg_daily) }}</h3>
+          <p class="text-white/70 text-sm">Average Daily Spending</p>
+        </div>
+        
+        <!-- Top Category -->
+        <div class="glass rounded-xl p-4 card-hover">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-trophy text-white"></i>
+            </div>
+            <span class="text-white/60 text-sm">Top Category</span>
+          </div>
+          <h3 class="text-xl font-bold text-white">{{ ai_insights.top_category or 'N/A' }}</h3>
+          <p class="text-white/70 text-sm">Highest Spending</p>
+        </div>
+      </div>
+      
+      <!-- AI Recommendations -->
+      {% if ai_insights.recommendations %}
+      <div class="mt-6">
+        <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+          <i class="fas fa-lightbulb mr-2 text-yellow-400"></i>
+          Smart Recommendations
+        </h3>
+        <div class="space-y-2">
+          {% for recommendation in ai_insights.recommendations %}
+          <div class="flex items-start space-x-3 p-3 bg-white/5 rounded-lg border border-white/10">
+            <i class="fas fa-arrow-right text-blue-400 mt-1"></i>
+            <p class="text-white/80 text-sm">{{ recommendation }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Add Expense Form -->
+      <div class="glass rounded-2xl p-6 animate-slide" style="animation-delay: 0.3s;">
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+          <i class="fas fa-plus-circle mr-3 text-green-400"></i>
+          Add New Expense
+        </h2>
+        
+        <form method="POST" action="/add_expense" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-white/80 text-sm font-medium mb-2">Date</label>
+              <input type="date" name="date" value="{{ current_date }}" required
+                class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300">
+            </div>
+            <div>
+              <label class="block text-white/80 text-sm font-medium mb-2">Amount (₹)</label>
+              <input type="number" name="amount" step="0.01" min="0" placeholder="0.00" required
+                class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300">
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-white/80 text-sm font-medium mb-2">Category</label>
+            <select name="category" required
+              class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300">
+              <option value="">Select Category</option>
+              <option value="Food">🍔 Food</option>
+              <option value="Transportation">🚗 Transportation</option>
+              <option value="Entertainment">🎬 Entertainment</option>
+              <option value="Shopping">🛍️ Shopping</option>
+              <option value="Bills">💡 Bills</option>
+              <option value="Healthcare">🏥 Healthcare</option>
+              <option value="Travel">✈️ Travel</option>
+              <option value="Other">📦 Other</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-white/80 text-sm font-medium mb-2">Description</label>
+            <textarea name="description" rows="3" placeholder="Enter expense description..." required
+              class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300 resize-none"></textarea>
+          </div>
+          
+          <button type="submit"
+            class="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 transform">
+            <i class="fas fa-plus mr-2"></i>Add Expense
+          </button>
+        </form>
+      </div>
+
+      <!-- Recent Expenses -->
+      <div class="glass rounded-2xl p-6 animate-slide" style="animation-delay: 0.4s;">
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+          <i class="fas fa-history mr-3 text-blue-400"></i>
+          Recent Expenses
+        </h2>
+        
+        {% if recent_expenses %}
+          <div class="space-y-3 max-h-80 overflow-y-auto">
+            {% for expense in recent_expenses %}
+            <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-receipt text-white text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-white font-medium">{{ expense.Category }}</p>
+                  <p class="text-white/60 text-sm">{{ expense.Description }}</p>
+                  <p class="text-white/50 text-xs">{{ expense.Date }}</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-3">
+                <div class="text-right">
+                  <p class="text-white font-bold">₹{{ "%.2f"|format(expense.Amount) }}</p>
+                </div>
+                <form method="POST" action="/delete_expense/{{ expense.index }}" class="inline">
+                  <button type="submit" onclick="return confirm('Are you sure you want to delete this expense?')" 
+                    class="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-all duration-300 micro-interaction">
+                    <i class="fas fa-trash text-sm"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-8">
+            <i class="fas fa-receipt text-white/30 text-4xl mb-4"></i>
+            <p class="text-white/60">No expenses recorded yet</p>
+            <p class="text-white/40 text-sm">Add your first expense to get started!</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Category Breakdown Chart -->
+    {% if category_data %}
+    <div class="mt-8 glass rounded-2xl p-6 animate-slide" style="animation-delay: 0.5s;">
+      <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+        <i class="fas fa-chart-pie mr-3 text-purple-400"></i>
+        Expense Breakdown by Category
+      </h2>
+      <div class="h-80">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- AI Chatbot Modal -->
+  <div id="aiChatModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="glass rounded-2xl w-full max-w-md animate-bounce-in">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-white flex items-center">
+              <i class="fas fa-robot mr-2 text-blue-400"></i>
+              AI Assistant
+            </h3>
+            <button id="closeChatModal" class="text-white/60 hover:text-white transition-colors">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div id="chatMessages" class="h-64 overflow-y-auto mb-4 space-y-3">
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                <i class="fas fa-robot text-white text-sm"></i>
+              </div>
+              <div class="glass rounded-lg p-3 max-w-xs">
+                <p class="text-white text-sm">Hello! I'm your KharchaMeter AI assistant. I can help you with budget planning, spending analysis, and financial tips. What would you like to know about your expenses?</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex space-x-2">
+            <input type="text" id="chatInput" placeholder="Ask me anything about your expenses..." 
+              class="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button id="sendMessage" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 micro-interaction">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Category Chart
+    {% if category_data %}
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    const categoryData = {{ category_data|tojson }};
+    
+    const colors = [
+      '#3B82F6', '#EF4444', '#10B981', '#F59E0B', 
+      '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'
+    ];
+    
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(categoryData),
+        datasets: [{
+          data: Object.values(categoryData),
+          backgroundColor: colors.slice(0, Object.keys(categoryData).length),
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: 'white',
+              font: {
+                family: 'Poppins',
+                size: 14
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: 'white',
+            bodyColor: 'white',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            borderWidth: 1
+          }
+        }
+      }
+    });
+    {% endif %}
+
+    // Add smooth scrolling and animations
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate cards on scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.animate-slide').forEach(el => {
+        observer.observe(el);
+      });
+
+      // AI Chatbot functionality
+      const aiChatToggle = document.getElementById('aiChatToggle');
+      const aiChatModal = document.getElementById('aiChatModal');
+      const closeChatModal = document.getElementById('closeChatModal');
+      const chatInput = document.getElementById('chatInput');
+      const sendMessage = document.getElementById('sendMessage');
+      const chatMessages = document.getElementById('chatMessages');
+
+      aiChatToggle.addEventListener('click', () => {
+        aiChatModal.classList.remove('hidden');
+        chatInput.focus();
+      });
+
+      closeChatModal.addEventListener('click', () => {
+        aiChatModal.classList.add('hidden');
+      });
+
+      // Close modal on outside click
+      aiChatModal.addEventListener('click', (e) => {
+        if (e.target === aiChatModal) {
+          aiChatModal.classList.add('hidden');
+        }
+      });
+
+      // Send message functionality
+      function sendChatMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Add user message
+        addMessage(message, 'user');
+        chatInput.value = '';
+
+        // Send to AI
+        fetch('/ai_chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+          addMessage(data.response, 'ai');
+        })
+        .catch(error => {
+          addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+        });
+      }
+
+      function addMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flex items-start space-x-3 ${sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`;
+        
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = `w-8 h-8 rounded-full flex items-center justify-center ${
+          sender === 'user' 
+            ? 'bg-gradient-to-r from-green-500 to-teal-500' 
+            : 'bg-gradient-to-r from-blue-500 to-purple-500'
+        }`;
+        avatarDiv.innerHTML = sender === 'user' ? '<i class="fas fa-user text-white text-sm"></i>' : '<i class="fas fa-robot text-white text-sm"></i>';
+        
+        const messageBubble = document.createElement('div');
+        messageBubble.className = `glass rounded-lg p-3 max-w-xs chat-bubble`;
+        messageBubble.innerHTML = `<p class="text-white text-sm">${message}</p>`;
+        
+        messageDiv.appendChild(avatarDiv);
+        messageDiv.appendChild(messageBubble);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      sendMessage.addEventListener('click', sendChatMessage);
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendChatMessage();
+        }
+      });
+
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      let isDark = false;
+
+      themeToggle.addEventListener('click', () => {
+        isDark = !isDark;
+        const icon = themeToggle.querySelector('i');
+        
+        if (isDark) {
+          document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+          icon.className = 'fas fa-sun';
+        } else {
+          document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+          icon.className = 'fas fa-moon';
+        }
+      });
+
+      // Enhanced form interactions
+      const formInputs = document.querySelectorAll('input, select, textarea');
+      formInputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          input.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        input.addEventListener('blur', () => {
+          input.parentElement.style.transform = 'scale(1)';
+        });
+      });
+
+      // Add loading states for form submission
+      const expenseForm = document.querySelector('form[action="/add_expense"]');
+      if (expenseForm) {
+        expenseForm.addEventListener('submit', () => {
+          const submitBtn = expenseForm.querySelector('button[type="submit"]');
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding...';
+          submitBtn.disabled = true;
+        });
+      }
+
+      // Add particle effects on card hover
+      document.querySelectorAll('.card-hover').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-8px) rotateX(5deg) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'translateY(0) rotateX(0deg) scale(1)';
+        });
+      });
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

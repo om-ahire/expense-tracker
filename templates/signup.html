@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - KharchaMeter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .animate-fade {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating background elements -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-20 left-20 w-32 h-32 bg-blue-400 rounded-full opacity-10 floating"></div>
+    <div class="absolute top-40 right-20 w-24 h-24 bg-purple-400 rounded-full opacity-10 floating" style="animation-delay: -2s;"></div>
+    <div class="absolute bottom-20 left-40 w-20 h-20 bg-pink-400 rounded-full opacity-10 floating" style="animation-delay: -4s;"></div>
+    <div class="absolute bottom-40 right-40 w-28 h-28 bg-green-400 rounded-full opacity-10 floating" style="animation-delay: -1s;"></div>
+  </div>
+
+  <div class="glass rounded-3xl p-10 w-full max-w-sm shadow-2xl animate-fade">
+    <!-- Logo and Branding -->
+    <div class="text-center mb-6">
+      <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+        <span class="text-white font-bold text-2xl">₹</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white mb-1">KharchaMeter</h1>
+      <p class="text-white/70 text-sm">Track Smart, Spend Smart</p>
+    </div>
+    
+    <h2 class="text-xl font-semibold text-center text-white mb-6">📝 Join KharchaMeter</h2>
+
+    {% if error %}
+      <p class="text-red-400 text-center mb-4">{{ error }}</p>
+    {% elif success %}
+      <p class="text-green-300 text-center mb-4">{{ success }}</p>
+    {% endif %}
+
+    <form method="POST" action="/signup" class="flex flex-col gap-4">
+      <input type="text" name="username" placeholder="Username" required
+        class="px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400">
+      <input type="password" name="password" placeholder="Password" required
+        class="px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400">
+      <button type="submit"
+        class="mt-2 px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold shadow hover:scale-105 transition">
+        Sign Up
+      </button>
+    </form>
+    <p class="text-white mt-4 text-center">
+      Already have an account? <a href="/login" class="underline hover:text-gray-200">Login</a>
+    </p>
+  </div>
+</body>
+</html>
