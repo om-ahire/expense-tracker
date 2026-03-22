@@ -188,7 +188,7 @@
         <span class="text-white/80">Welcome, <span class="font-semibold">{{ username }}</span></span>
         
         <!-- AI Chatbot Toggle -->
-        <button id="aiChatToggle" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-all duration-300 micro-interaction ai-glow">
+        <button id="aiChatToggle" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-all duration-300 micro-interaction ai-glow" aria-label="Open AI Assistant">
           <i class="fas fa-robot mr-2"></i>AI Assistant
         </button>
         
@@ -477,7 +477,7 @@
   <script>
     // Category Chart
     {% if category_data %}
-    const ctx = document.getElementById('categoryChart').getContext('2d');
+    const ctx = document.getElementById('categoryChart')?.getContext('2d');
     const categoryData = {{ category_data|tojson }};
     
     const colors = [
@@ -485,28 +485,33 @@
       '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'
     ];
     
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(categoryData),
-        datasets: [{
-          data: Object.values(categoryData),
-          backgroundColor: colors.slice(0, Object.keys(categoryData).length),
-          borderWidth: 0,
-          hoverOffset: 10
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              color: 'white',
-              font: {
-                family: 'Poppins',
-                size: 14
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(categoryData),
+          datasets: [{
+            data: Object.values(categoryData),
+            backgroundColor: colors.slice(0, Object.keys(categoryData).length),
+            borderWidth: 0,
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: false
+            },
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: 'white',
+                font: {
+                  family: 'Poppins',
+                  size: 14
+                }
               }
             }
           },
@@ -517,9 +522,12 @@
             borderColor: 'rgba(255, 255, 255, 0.2)',
             borderWidth: 1
           }
-        }
-      }
-    });
+        },
+      });
+    } else {
+      // Handle the case where the chart cannot be rendered
+      document.getElementById('categoryChart').innerHTML = '<p class="text-white">Chart could not be rendered. Please check your data.</p>';
+    }
     {% endif %}
 
     // Add smooth scrolling and animations
@@ -689,5 +697,6 @@
       });
     });
   </script>
+  
 </body>
 </html>
