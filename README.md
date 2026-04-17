@@ -22,13 +22,6 @@
 
 ---
 
-## 🌐 Live Preview
-
-🔗 **Try it here:**
-👉 https://your-live-link.com
-
-
----
 
 ## 💡 The Idea
 
