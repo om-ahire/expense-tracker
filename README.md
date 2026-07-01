@@ -1,22 +1,5 @@
 # 🚀 Kharchameter — Smart Expense Tracker
 
-<p align="center">
-  <b>Track smarter. Spend wiser. Live better.</b>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/github/stars/your-username/Kharchameter?style=for-the-badge" />
-  <img src="https://img.shields.io/github/forks/your-username/Kharchameter?style=for-the-badge" />
-  <img src="https://img.shields.io/github/issues/your-username/Kharchameter?style=for-the-badge" />
-  <img src="https://img.shields.io/github/license/your-username/Kharchameter?style=for-the-badge" />
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/HTML5-Structure-orange?logo=html5&style=flat-square" />
-  <img src="https://img.shields.io/badge/CSS3-Styling-blue?logo=css3&style=flat-square" />
-  <img src="https://img.shields.io/badge/JavaScript-Dynamic-yellow?logo=javascript&style=flat-square" />
-  <img src="https://img.shields.io/badge/Figma-UI%2FUX-purple?logo=figma&style=flat-square" />
-</p>
 
 ---
 
